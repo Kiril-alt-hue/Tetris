@@ -1,5 +1,6 @@
 import pygame
 from random import *
+from Piece import *
 
 class View:
     def __init__(self):
@@ -7,6 +8,15 @@ class View:
         self.screen = pygame.display.set_mode((600, 800))
         pygame.display.set_icon(pygame.image.load('icon.png'))
         pygame.display.set_caption("Тетрiс")
+
+        # checking if it works xd
+        self.falling_piece = SquareShape([5, 0], (200, 200, 50))
+        self.BLOCK_SIZE = 40
+
+        self.FALL_EVENT = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.FALL_EVENT, 1000)
+        # checking if it works xd
+
         self.play()
 
     def draw_grid(self):
@@ -26,9 +36,19 @@ class View:
 
             self.draw_grid()
 
+            # checking if it works xd
+            self.falling_piece.draw(self.screen, self.BLOCK_SIZE)
+            # checking if it works xd
+
             pygame.display.update()
 
             for event in pygame.event.get():
+
+                # checking if it works xd
+                if event.type == self.FALL_EVENT:
+                    self.falling_piece.move()
+                # checking if it works xd
+
                 if event.type == pygame.QUIT:
                     running = False
 
