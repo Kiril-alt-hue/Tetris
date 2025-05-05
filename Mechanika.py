@@ -103,11 +103,12 @@ class Mechanika:
                     self.view.draw_grid()
                     self.view.draw_piece(self.current_piece)
                     self.view.draw_board(self.board.board)
-                    self.view.draw_score(self.score)
+                    # self.view.draw_score(self.score)
                     self.view.screen.set_clip(None)  #скидаємо обмеження
 
-                    #малювання платформи
+                    #малювання платформи та рахунку
                     self.view.draw_platform()
+                    self.view.draw_score(self.score)
                 else:
                     font = pygame.font.Font(None, 48)
                     pause_text = font.render("Paused", True, (255, 255, 255))

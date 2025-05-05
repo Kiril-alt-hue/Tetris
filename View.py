@@ -137,9 +137,9 @@ class View:
                     )
 
     def draw_score(self, score):
-        font = pygame.font.Font(None, 36)
-        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
-        self.screen.blit(score_text, (10, 10))
+        font = pygame.font.Font(None, 90)
+        score_text = font.render(f"{score}", True, (255, 194, 236))
+        self.screen.blit(score_text, (400, 655)) #змінено для виводу
 
 
 class Button:
