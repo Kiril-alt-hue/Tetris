@@ -1,7 +1,7 @@
 import pygame
 import random
 from Piece import *
-from View import View
+from View import View, Button
 from Board import Board
 
 class Mechanika:
@@ -12,6 +12,7 @@ class Mechanika:
         self.game_over = False
         self.current_piece = self.spawn_piece()
         self.clock = pygame.time.Clock()
+        self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
         self.move_delay = 100  # Затримка в мс між рухами
         self.last_move_time = 0  # Час останнього руху
         self.just_moved = False  # Флаг, що шматок щойно рухався
@@ -31,6 +32,21 @@ class Mechanika:
             self.game_over = True
 
     def run(self):
+
+        in_menu = True
+        while in_menu:
+            self.view.screen.fill((33, 33, 33))
+            self.start_button.draw_button(self.view.screen)
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.start_button.is_clicked(event.pos):
+                        in_menu = False
+
         while not self.game_over:
             current_time = pygame.time.get_ticks()
             self.clock.tick(60)
