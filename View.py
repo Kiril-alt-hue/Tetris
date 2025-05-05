@@ -89,7 +89,7 @@ from Piece import *
 # # if __name__ == '__main__':
 # #     game = View()
 
-import pygame
+
 from Piece import *
 
 class View:
@@ -139,10 +139,8 @@ class Button:
         self.y = size[1]
         self.w = size[2]
         self.h = size[3]
-
         self.color = color
         self.text = text
-
         self.font = pygame.font.SysFont(None, 50)
         self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
 

@@ -1,4 +1,3 @@
-import pygame
 import random
 from Piece import *
 from View import View, Button
@@ -7,20 +6,22 @@ from Board import Board
 class Mechanika:
     def __init__(self):
         self.view = View()
-        self.board = Board()
+        self.board = Board(self.view)
         self.score = 0
         self.game_over = False
         self.current_piece = self.spawn_piece()
         self.clock = pygame.time.Clock()
         self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
-        self.move_delay = 100  # Затримка в мс між рухами
-        self.last_move_time = 0  # Час останнього руху
-        self.just_moved = False  # Флаг, що шматок щойно рухався
+        self.move_delay = 100
+        self.last_move_time = 0
+        self.just_moved = False
+        self.paused = False
+        self.lock_time = 0
 
     def spawn_piece(self):
         shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
         shape_class = random.choice(shapes)
-        return shape_class([5, 0], (200, 200, 50))  # Центр для поля шириною 10
+        return shape_class([5, 0], (200, 200, 50))
 
     def drop_piece_to_bottom(self):
         while not self.board.check_collision(self.current_piece, dy=1):
@@ -32,7 +33,6 @@ class Mechanika:
             self.game_over = True
 
     def run(self):
-
         in_menu = True
         while in_menu:
             self.view.screen.fill((33, 33, 33))
@@ -54,17 +54,21 @@ class Mechanika:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game_over = True
-                elif event.type == self.view.FALL_EVENT and not self.just_moved:
+                elif event.type == self.view.FALL_EVENT and not self.paused:
                     if not self.board.check_collision(self.current_piece, dy=1):
                         self.current_piece.move(dy=1)
                     else:
-                        self.board.lock_piece(self.current_piece)
-                        self.score += self.board.clear_lines() * 100
-                        self.current_piece = self.spawn_piece()
-                        if self.board.is_game_over(self.current_piece):
-                            self.game_over = True
+                        if self.lock_time == 0:
+                            self.lock_time = pygame.time.get_ticks()
+                        elif pygame.time.get_ticks() - self.lock_time > 500:
+                            self.board.lock_piece(self.current_piece)
+                            self.score += self.board.clear_lines() * 100
+                            self.current_piece = self.spawn_piece()
+                            self.lock_time = 0
+                            if self.board.is_game_over(self.current_piece):
+                                self.game_over = True
                 elif event.type == pygame.KEYDOWN:
-                    if current_time - self.last_move_time > self.move_delay:
+                    if not self.paused and current_time - self.last_move_time > self.move_delay:
                         if event.key == pygame.K_LEFT:
                             if not self.board.check_collision(self.current_piece, dx=-1):
                                 self.current_piece.move(dx=-1)
@@ -85,13 +89,24 @@ class Mechanika:
                         elif event.key == pygame.K_DOWN:
                             self.drop_piece_to_bottom()
                             self.last_move_time = current_time
+                        elif event.key == pygame.K_p:
+                            self.paused = not self.paused
+                            self.lock_time = 0
+                    elif event.key == pygame.K_p and self.paused:
+                        self.paused = False
 
-            self.view.screen.fill((33, 33, 33))
-            self.view.draw_grid()
-            self.view.draw_piece(self.current_piece)
-            self.view.draw_board(self.board.board)
-            self.view.draw_score(self.score)
-            pygame.display.flip()
+            if not self.game_over:
+                if not self.paused:
+                    self.view.screen.fill((33, 33, 33))
+                    self.view.draw_grid()
+                    self.view.draw_piece(self.current_piece)
+                    self.view.draw_board(self.board.board)
+                    self.view.draw_score(self.score)
+                else:
+                    font = pygame.font.Font(None, 48)
+                    pause_text = font.render("Paused", True, (255, 255, 255))
+                    self.view.screen.blit(pause_text, (250, 400))
+                pygame.display.flip()
 
         self.show_game_over_screen()
         pygame.quit()
@@ -113,7 +128,7 @@ class Mechanika:
                     waiting = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
-                        self.__init__()  # Перезавантаження гри
+                        self.__init__()
                         self.run()
                         return
 
