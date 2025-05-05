@@ -1,7 +1,7 @@
 import pygame
 import random
 from Piece import *
-from View import View
+from View import View, Button
 from Board import Board
 
 class Mechanika:
@@ -11,6 +11,7 @@ class Mechanika:
         self.score = 0
         self.game_over = False
         self.current_piece = self.spawn_piece()
+        self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
 
     def spawn_piece(self):
         shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
@@ -27,6 +28,21 @@ class Mechanika:
             self.game_over = True
 
     def run(self):
+                                                                # start menu script
+        in_menu = True
+        while in_menu:
+            self.view.screen.fill((33, 33, 33))
+            self.start_button.draw_button(self.view.screen)
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.start_button.is_clicked(event.pos):
+                        in_menu = False
+                                                                # end menu script
         while not self.game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -61,6 +77,7 @@ class Mechanika:
             self.view.draw_board(self.board.board)
             self.view.draw_score(self.score)
             pygame.display.flip()
+
 
         pygame.quit()
 
