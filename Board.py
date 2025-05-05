@@ -13,7 +13,7 @@ class Board:
         for x, y in piece.coordinates:
             board_x = px + x
             board_y = py + y
-            if board_x < 0 or board_x > 14 or board_y >= 20:
+            if board_x < 0 or board_x > 14 or board_y >= 16: #змінила кордони
                 return True
             if board_y < 0:
                 continue

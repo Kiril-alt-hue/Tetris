@@ -89,6 +89,8 @@ from Piece import *
 # # if __name__ == '__main__':
 # #     game = View()
 
+        # pygame.draw.line(self.screen, (1, 2, 3), (1, 1), (600, 1), width= 100)
+
 
 from Piece import *
 
@@ -99,14 +101,21 @@ class View:
         pygame.display.set_icon(pygame.image.load('icon.png'))
         pygame.display.set_caption("Тетріс")
         self.BLOCK_SIZE = 40
+        self.GRID_HEIGHT = 650
         self.FALL_EVENT = pygame.USEREVENT + 1
         pygame.time.set_timer(self.FALL_EVENT, 1000)
 
     def draw_grid(self):
-        for x in range(0, 600, self.BLOCK_SIZE):  # 15 columns = 600 pixels
-            pygame.draw.line(self.screen, (28, 28, 28), (x, 0), (x, 800), width=2)
-        for y in range(0, 800, self.BLOCK_SIZE):  # 20 rows = 800 pixels
-            pygame.draw.line(self.screen, (28, 28, 28), (0, y), (600, y), width=2)
+        #сітка
+        for x in range(0, 600, self.BLOCK_SIZE):
+            pygame.draw.line(self.screen, (28, 28, 28), (x, 0), (x, self.GRID_HEIGHT), 3) #змінила товщину на 3
+        for y in range(0, self.GRID_HEIGHT, self.BLOCK_SIZE):
+            pygame.draw.line(self.screen, (28, 28, 28), (0, y), (600, y), 3) #змінила товщину на 3
+
+    def draw_platform(self):
+        #платформа
+        pygame.draw.rect(self.screen, (50, 50, 50), (0, self.GRID_HEIGHT, 600, 150))
+        pygame.draw.rect(self.screen, (255, 194, 236), (0, self.GRID_HEIGHT, 600, 150), 3)
 
     def draw_piece(self, piece):
         piece.draw(self.screen, self.BLOCK_SIZE)

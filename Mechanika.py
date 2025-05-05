@@ -98,10 +98,16 @@ class Mechanika:
             if not self.game_over:
                 if not self.paused:
                     self.view.screen.fill((33, 33, 33))
+
+                    self.view.screen.set_clip(0, 0, 600, self.view.GRID_HEIGHT) #область відсікання
                     self.view.draw_grid()
                     self.view.draw_piece(self.current_piece)
                     self.view.draw_board(self.board.board)
                     self.view.draw_score(self.score)
+                    self.view.screen.set_clip(None)  #скидаємо обмеження
+
+                    #малювання платформи
+                    self.view.draw_platform()
                 else:
                     font = pygame.font.Font(None, 48)
                     pause_text = font.render("Paused", True, (255, 255, 255))
