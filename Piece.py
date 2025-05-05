@@ -1,5 +1,4 @@
 import pygame
-import sys
 
 class Piece:
     def __init__(self, coordinates : list, position : list, color):
@@ -35,5 +34,34 @@ class TShape(Piece):
         coordinates = [(0, -1), (-1, 0), (0, 0), (1, 0)]
         super().__init__(coordinates, position, color)
 
+
+class StairShape1(Piece):
+    def __init__(self, position: list, color):
+        coordinates = [(-1, -1), (0, -1), (0, 0), (1, 0)]
+        super().__init__(coordinates, position, color)
+
+
+class StairShape2(Piece):
+    def __init__(self, position: list, color):
+        coordinates = [(1, -1), (0, -1), (0, 0), (-1, 0)]
+        super().__init__(coordinates, position, color)
+
+
+class LShape1(Piece):
+    def __init__(self, position: list, color):
+        coordinates = [(-1, 0), (0, 0), (1, 0), (1, -1)]
+        super().__init__(coordinates, position, color)
+
+
+class LShape2(Piece):
+    def __init__(self, position: list, color):
+        coordinates = [(-1, -1), (-1, 0), (0, 0), (1, 0)]
+        super().__init__(coordinates, position, color)
+
+
+class LineShape(Piece):
+    def __init__(self, position: list, color):
+        coordinates = [(-2, 0), (-1, 0), (0, 0), (1, 0)]
+        super().__init__(coordinates, position, color)
 
 

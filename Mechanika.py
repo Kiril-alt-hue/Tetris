@@ -1,6 +1,6 @@
 import pygame
 import random
-from Piece import Piece, SquareShape, TShape
+from Piece import *
 from View import View
 from Board import Board
 
@@ -13,7 +13,7 @@ class Mechanika:
         self.current_piece = self.spawn_piece()
 
     def spawn_piece(self):
-        shapes = [SquareShape, TShape]
+        shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
         shape_class = random.choice(shapes)
         return shape_class([7, 0], (200, 200, 50))
 
