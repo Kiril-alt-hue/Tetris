@@ -1,4 +1,4 @@
-from View import *
+import pygame
 import sys
 
 class Piece:
@@ -19,8 +19,9 @@ class Piece:
         return [(-y, x) for x, y in self.coordinates] # expected list of coordinates :
                                                       # [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
 
-    def move(self):
-        self.position[1] += 1                         # expected position : [x, y]
+    def move(self, dx=0, dy=1):
+        self.position[0] += dx
+        self.position[1] += dy     # expected position : [x, y]
 
 
 class SquareShape(Piece):
