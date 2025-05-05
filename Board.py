@@ -1,6 +1,6 @@
 class Board:
     def __init__(self):
-        self.board = [[0] * 15 for _ in range(20)]  # Змінено з 10 на 15 стовпців
+        self.board = [[0] * 15 for _ in range(20)]
 
     def check_collision(self, piece, dx=0, dy=0):
         px, py = piece.position
@@ -9,7 +9,7 @@ class Board:
         for x, y in piece.coordinates:
             board_x = px + x
             board_y = py + y
-            if board_x < 0 or board_x > 14 or board_y >= 20:  # Змінено з > 9 на > 14
+            if board_x < 0 or board_x > 14 or board_y >= 20:
                 return True
             if board_y < 0:
                 continue
@@ -29,7 +29,7 @@ class Board:
         new_board = [row for row in self.board if any(cell == 0 for cell in row)]
         lines_cleared = 20 - len(new_board)
         while len(new_board) < 20:
-            new_board.insert(0, [0] * 15)  # Змінено з [0] * 10 на [0] * 15
+            new_board.insert(0, [0] * 15)
         self.board = new_board
         return lines_cleared
 

@@ -15,7 +15,7 @@ class Mechanika:
     def spawn_piece(self):
         shapes = [SquareShape, TShape]
         shape_class = random.choice(shapes)
-        return shape_class([7, 0], (200, 200, 50))  # Змінено з [5, 0] на [7, 0] для центру поля 15 стовпців
+        return shape_class([7, 0], (200, 200, 50))
 
     def drop_piece_to_bottom(self):
         while not self.board.check_collision(self.current_piece, dy=1):

@@ -96,6 +96,7 @@ class View:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((600, 800))
+        pygame.display.set_icon(pygame.image.load('icon.png'))
         pygame.display.set_caption("Тетріс")
         self.BLOCK_SIZE = 40
         self.FALL_EVENT = pygame.USEREVENT + 1
