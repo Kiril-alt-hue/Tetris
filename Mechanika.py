@@ -1,7 +1,7 @@
 import pygame
 import random
 from Piece import *
-from View import View, Button
+from View import View
 from Board import Board
 
 class Mechanika:
@@ -11,12 +11,15 @@ class Mechanika:
         self.score = 0
         self.game_over = False
         self.current_piece = self.spawn_piece()
-        self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
+        self.clock = pygame.time.Clock()
+        self.move_delay = 100  # Затримка в мс між рухами
+        self.last_move_time = 0  # Час останнього руху
+        self.just_moved = False  # Флаг, що шматок щойно рухався
 
     def spawn_piece(self):
         shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
         shape_class = random.choice(shapes)
-        return shape_class([7, 0], (200, 200, 50))
+        return shape_class([5, 0], (200, 200, 50))  # Центр для поля шириною 10
 
     def drop_piece_to_bottom(self):
         while not self.board.check_collision(self.current_piece, dy=1):
@@ -28,26 +31,14 @@ class Mechanika:
             self.game_over = True
 
     def run(self):
-                                                                # start menu script
-        in_menu = True
-        while in_menu:
-            self.view.screen.fill((33, 33, 33))
-            self.start_button.draw_button(self.view.screen)
-            pygame.display.flip()
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    return
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.start_button.is_clicked(event.pos):
-                        in_menu = False
-                                                                # end menu script
         while not self.game_over:
+            current_time = pygame.time.get_ticks()
+            self.clock.tick(60)
+            self.just_moved = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game_over = True
-                elif event.type == self.view.FALL_EVENT:
+                elif event.type == self.view.FALL_EVENT and not self.just_moved:
                     if not self.board.check_collision(self.current_piece, dy=1):
                         self.current_piece.move(dy=1)
                     else:
@@ -57,19 +48,27 @@ class Mechanika:
                         if self.board.is_game_over(self.current_piece):
                             self.game_over = True
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        if not self.board.check_collision(self.current_piece, dx=-1):
-                            self.current_piece.move(dx=-1)
-                    elif event.key == pygame.K_RIGHT:
-                        if not self.board.check_collision(self.current_piece, dx=1):
-                            self.current_piece.move(dx=1)
-                    elif event.key == pygame.K_UP:
-                        original_coords = self.current_piece.coordinates
-                        self.current_piece.coordinates = self.current_piece.rotate()
-                        if self.board.check_collision(self.current_piece):
-                            self.current_piece.coordinates = original_coords
-                    elif event.key == pygame.K_DOWN:
-                        self.drop_piece_to_bottom()
+                    if current_time - self.last_move_time > self.move_delay:
+                        if event.key == pygame.K_LEFT:
+                            if not self.board.check_collision(self.current_piece, dx=-1):
+                                self.current_piece.move(dx=-1)
+                                self.last_move_time = current_time
+                                self.just_moved = True
+                        elif event.key == pygame.K_RIGHT:
+                            if not self.board.check_collision(self.current_piece, dx=1):
+                                self.current_piece.move(dx=1)
+                                self.last_move_time = current_time
+                                self.just_moved = True
+                        elif event.key == pygame.K_UP:
+                            original_coords = self.current_piece.coordinates
+                            original_pos = self.current_piece.position.copy()
+                            self.current_piece.coordinates = self.current_piece.rotate()
+                            if self.board.check_collision(self.current_piece):
+                                self.current_piece.coordinates = original_coords
+                                self.current_piece.position = original_pos
+                        elif event.key == pygame.K_DOWN:
+                            self.drop_piece_to_bottom()
+                            self.last_move_time = current_time
 
             self.view.screen.fill((33, 33, 33))
             self.view.draw_grid()
@@ -78,8 +77,29 @@ class Mechanika:
             self.view.draw_score(self.score)
             pygame.display.flip()
 
-
+        self.show_game_over_screen()
         pygame.quit()
+
+    def show_game_over_screen(self):
+        font = pygame.font.Font(None, 48)
+        game_over_text = font.render("Game Over", True, (255, 0, 0))
+        score_text = font.render(f"Final Score: {self.score}", True, (255, 255, 255))
+        restart_text = font.render("Press R to Restart", True, (255, 255, 255))
+        self.view.screen.fill((33, 33, 33))
+        self.view.screen.blit(game_over_text, (150, 300))
+        self.view.screen.blit(score_text, (150, 350))
+        self.view.screen.blit(restart_text, (150, 400))
+        pygame.display.flip()
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self.__init__()  # Перезавантаження гри
+                        self.run()
+                        return
 
 if __name__ == "__main__":
     game = Mechanika()
