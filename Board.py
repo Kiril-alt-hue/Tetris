@@ -2,7 +2,7 @@ import pygame
 
 class Board:
     def __init__(self, view):
-        self.board = [[0] * 15 for _ in range(20)]  # Ініціалізація дошки 20x15 із нулями
+        self.board = [[0] * 15 for _ in range(16)]  # Ініціалізація дошки 20x15 із нулями
         self.view = view
 
     def check_collision(self, piece, dx=0, dy=0):
@@ -25,7 +25,7 @@ class Board:
         for x, y in piece.coordinates:             # Перевірка кожної координати фігури
             board_x = px + x                       # Обчислення позиції на дошку по x
             board_y = py + y                       # Обчислення позиції на дошку по y
-            if board_y >= 20 or board_x < 0 or board_x > 14:  # Перевірка верхньої межі
+            if board_y >= 16 or board_x < 0 or board_x > 14:  # Перевірка верхньої межі (вирішення багу)
                 piece.position[1] -= 1              # Підняття фігури на 1 вгору
                 return self.lock_piece(piece)       # Рекурсивний виклик
             if board_y >= 0 and self.board[board_y][board_x] != 0:  # Перевірка колізії
@@ -49,8 +49,8 @@ class Board:
                 pygame.display.flip()               # Оновлення екрану
                 pygame.time.delay(100)              # Затримка 100 мс
             new_board = [row for i, row in enumerate(self.board) if i not in lines_to_clear]  # Створення нової дошки
-            lines_cleared = 20 - len(new_board)    # Кількість очищених рядків
-            while len(new_board) < 20:             # Додавання порожніх рядків зверху
+            lines_cleared = 16 - len(new_board)    # Кількість очищених рядків
+            while len(new_board) < 16:             # Додавання порожніх рядків зверху (вирішення багу)
                 new_board.insert(0, [0] * 15)
             self.board = new_board                 # Оновлення дошки
             return lines_cleared                   # Повернення кількості очищених рядків

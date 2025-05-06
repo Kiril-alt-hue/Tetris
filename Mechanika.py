@@ -56,7 +56,8 @@ class Mechanika:
                     self.game_over = True
                 elif event.type == self.view.FALL_EVENT and not self.paused:  # Подія падіння
                     if not self.board.check_collision(self.current_piece, dy=1):  # Перевірка колізій
-                        self.current_piece.move(dy=1)  # Рух вниз
+                        self.current_piece.move(dy=1)# Рух вниз
+                        self.lock_time = 0 # Додав для можливого вирішення багу (воно працює!!!!)
                     else:  # Фіксація при колізії
                         if self.lock_time == 0:
                             self.lock_time = pygame.time.get_ticks()

@@ -34,7 +34,7 @@ class View:
                 pygame.draw.rect(self.screen, (0, 0, 0), (x, y, self.BLOCK_SIZE, self.BLOCK_SIZE), 2)
 
     def draw_board(self, board):
-        for y in range(20):
+        for y in range(16): # Можливе вирішення багу (воно працює!!!)
             for x in range(15):  # Змінено з 10 на 15 для відображення повного поля
                 if board[y][x]:
                     pygame.draw.rect(
