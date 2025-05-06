@@ -20,8 +20,10 @@ class Mechanika:
 
     def spawn_piece(self):
         shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
+        colors = [(255, 0, 0), (0, 128, 0), (0, 255, 255), (128, 0, 128), (255, 165, 0), (255, 255, 0), (0, 255, 0)]
+        shape_color = random.choice(colors)
         shape_class = random.choice(shapes)  # Випадковий вибір фігури
-        return shape_class([5, 0], (200, 200, 50))
+        return shape_class([5, 0], shape_color)
 
     def drop_piece_to_bottom(self):
         while not self.board.check_collision(self.current_piece, dy=1):  # Перевірка колізій при падінні

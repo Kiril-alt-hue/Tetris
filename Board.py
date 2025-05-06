@@ -35,7 +35,7 @@ class Board:
             board_x = px + x                       # Обчислення позиції по x
             board_y = py + y                       # Обчислення позиції по y
             if board_y >= 0 and board_y < 20 and board_x >= 0 and board_x < 15:
-                self.board[board_y][board_x] = 1   # Позначає клітинку як зайняту
+                self.board[board_y][board_x] = piece.color   # Позначає клітинку як зайняту
 
     def clear_lines(self):
         lines_to_clear = [i for i, row in enumerate(self.board) if all(cell != 0 for cell in row)]  # Знаходження повних рядків
