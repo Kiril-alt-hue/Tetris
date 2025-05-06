@@ -1,7 +1,7 @@
 import pygame
 
 class Piece:
-    def __init__(self, coordinates : list, position : list, color):
+    def __init__(self, coordinates: list, position: list, color):
         self.coordinates = coordinates
         self.position = position
         self.color = color
@@ -15,12 +15,15 @@ class Piece:
             pygame.draw.rect(surface, (0, 0, 0), (x, y, block_size, block_size), 2)
 
     def rotate(self):
-        return [(-y, x) for x, y in self.coordinates] # expected list of coordinates :
-                                                      # [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+        # Для SquareShape не змінюємо координати, оскільки вона симетрична
+        if isinstance(self, SquareShape):
+            return self.coordinates
+        # Для інших фігур виконуємо обертання
+        return [(-y, x) for x, y in self.coordinates]  # Очікуваний список координат: [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
 
     def move(self, dx=0, dy=1):
         self.position[0] += dx
-        self.position[1] += dy     # expected position : [x, y]
+        self.position[1] += dy  # Очікувана позиція: [x, y]
 
 
 class SquareShape(Piece):
@@ -63,5 +66,3 @@ class LineShape(Piece):
     def __init__(self, position: list, color):
         coordinates = [(-2, 0), (-1, 0), (0, 0), (1, 0)]
         super().__init__(coordinates, position, color)
-
-

@@ -80,12 +80,13 @@ class Mechanika:
                                 self.last_move_time = current_time
                                 self.just_moved = True
                         elif event.key == pygame.K_UP:
-                            original_coords = self.current_piece.coordinates
-                            original_pos = self.current_piece.position.copy()
-                            self.current_piece.coordinates = self.current_piece.rotate()
-                            if self.board.check_collision(self.current_piece):
-                                self.current_piece.coordinates = original_coords
-                                self.current_piece.position = original_pos
+                            if not isinstance(self.current_piece, SquareShape):  # Не обертаємо квадрат
+                                original_coords = self.current_piece.coordinates
+                                original_pos = self.current_piece.position.copy()
+                                self.current_piece.coordinates = self.current_piece.rotate()
+                                if self.board.check_collision(self.current_piece):
+                                    self.current_piece.coordinates = original_coords
+                                    self.current_piece.position = original_pos
                         elif event.key == pygame.K_DOWN:
                             self.drop_piece_to_bottom()
                             self.last_move_time = current_time
