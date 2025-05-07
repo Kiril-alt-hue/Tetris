@@ -12,7 +12,7 @@ class Mechanika:
         self.current_piece = self.spawn_piece()  # Створення початкової фігури
         self.clock = pygame.time.Clock()  # Ініціалізація таймера
         self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
-        self.move_delay = 100      # Затримка між рухами
+        self.move_delay = 120      # Затримка між рухами
         self.last_move_time = 0    # Час останнього руху
         self.just_moved = False    # Прапорець останнього руху
         self.paused = False        # Прапорець паузи
@@ -53,6 +53,28 @@ class Mechanika:
             current_time = pygame.time.get_ticks()  # Поточний час
             self.clock.tick(60)  # Обмеження FPS
             self.just_moved = False
+
+
+            # Перевірка на утримання клавіш для руху
+            keys = pygame.key.get_pressed()
+            if not self.paused and current_time - self.last_move_time > self.move_delay:
+                if keys[pygame.K_LEFT]:  # Рух вліво
+                    if not self.board.check_collision(self.current_piece, dx=-1):
+                        self.current_piece.move(dx=-1)
+                        self.last_move_time = current_time
+                        self.just_moved = True
+                if keys[pygame.K_RIGHT]:  # Рух вправо
+                    if not self.board.check_collision(self.current_piece, dx=1):
+                        self.current_piece.move(dx=1)
+                        self.last_move_time = current_time
+                        self.just_moved = True
+                if keys[pygame.K_DOWN]:  # Прискорене падіння
+                    if not self.board.check_collision(self.current_piece, dy=1):
+                        self.current_piece.move(dy=1)
+                        self.last_move_time = current_time
+                        self.just_moved = True
+
+
             for event in pygame.event.get():  # Обробка подій
                 if event.type == pygame.QUIT:  # Вихід із гри
                     self.game_over = True
@@ -71,18 +93,35 @@ class Mechanika:
                             if self.board.is_game_over(self.current_piece):
                                 self.game_over = True
                 elif event.type == pygame.KEYDOWN:  # Обробка клавіш
-                    if not self.paused and current_time - self.last_move_time > self.move_delay:
-                        if event.key == pygame.K_LEFT:  # Рух вліво
-                            if not self.board.check_collision(self.current_piece, dx=-1):
-                                self.current_piece.move(dx=-1)
-                                self.last_move_time = current_time
-                                self.just_moved = True
-                        elif event.key == pygame.K_RIGHT:  # Рух вправо
-                            if not self.board.check_collision(self.current_piece, dx=1):
-                                self.current_piece.move(dx=1)
-                                self.last_move_time = current_time
-                                self.just_moved = True
-                        elif event.key == pygame.K_UP:  # Обертання
+                    # if not self.paused and current_time - self.last_move_time > self.move_delay:
+                    #     if event.key == pygame.K_LEFT:  # Рух вліво
+                    #         if not self.board.check_collision(self.current_piece, dx=-1):
+                    #             self.current_piece.move(dx=-1)
+                    #             self.last_move_time = current_time
+                    #             self.just_moved = True
+                    #     elif event.key == pygame.K_RIGHT:  # Рух вправо
+                    #         if not self.board.check_collision(self.current_piece, dx=1):
+                    #             self.current_piece.move(dx=1)
+                    #             self.last_move_time = current_time
+                    #             self.just_moved = True
+                    #     elif event.key == pygame.K_UP:  # Обертання
+                    #         if not isinstance(self.current_piece, SquareShape):
+                    #             original_coords = self.current_piece.coordinates
+                    #             original_pos = self.current_piece.position.copy()
+                    #             self.current_piece.coordinates = self.current_piece.rotate()
+                    #             if self.board.check_collision(self.current_piece):
+                    #                 self.current_piece.coordinates = original_coords
+                    #                 self.current_piece.position = original_pos
+                    #     elif event.key == pygame.K_DOWN:  # Швидке падіння
+                    #         self.drop_piece_to_bottom()
+                    #         self.last_move_time = current_time
+                    #     elif event.key == pygame.K_p:  # Пауза
+                    #         self.paused = not self.paused
+                    #         self.lock_time = 0
+                    # elif event.key == pygame.K_p and self.paused:  # Вихід із паузи
+                    #     self.paused = False
+                    if not self.paused:
+                        if event.key == pygame.K_UP:  # Обертання
                             if not isinstance(self.current_piece, SquareShape):
                                 original_coords = self.current_piece.coordinates
                                 original_pos = self.current_piece.position.copy()
@@ -90,7 +129,7 @@ class Mechanika:
                                 if self.board.check_collision(self.current_piece):
                                     self.current_piece.coordinates = original_coords
                                     self.current_piece.position = original_pos
-                        elif event.key == pygame.K_DOWN:  # Швидке падіння
+                        elif event.key == pygame.K_SPACE:  # Швидке падіння
                             self.drop_piece_to_bottom()
                             self.last_move_time = current_time
                         elif event.key == pygame.K_p:  # Пауза

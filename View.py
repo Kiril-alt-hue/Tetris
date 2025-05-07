@@ -9,7 +9,7 @@ class View:
         self.BLOCK_SIZE = 40
         self.GRID_HEIGHT = 650
         self.FALL_EVENT = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.FALL_EVENT, 1000)
+        pygame.time.set_timer(self.FALL_EVENT, 1500)
 
     def draw_grid(self):
         #сітка
