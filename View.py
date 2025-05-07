@@ -1,4 +1,3 @@
-from Piece import *
 import pygame
 
 class View:
@@ -73,21 +72,21 @@ class View:
         score_text = font.render(f"{score}", True, (255, 194, 236))
         self.screen.blit(score_text, (400, 655)) #змінено для виводу
 
-    # def draw_pause_on_off(self):
-    #     if not self.paused:  # Малювання гри
-    #         self.screen.fill((33, 33, 33))
-    #         self.screen.set_clip(0, 0, 600, self.GRID_HEIGHT)
-    #         self.draw_grid()
-    #         self.draw_piece(self.current_piece)
-    #         self.draw_board(self.board.board)
-    #         self.screen.set_clip(None)
-    #         self.draw_platform()
-    #         self.draw_score(self.score)
-    #     else:  # Малювання паузи
-    #         font = pygame.font.Font(None, 48)
-    #         pause_text = font.render("Paused", True, (255, 255, 255))
-    #         self.screen.blit(pause_text, (250, 400))
-    #     pygame.display.flip()
+    def draw_pause_on_off(self, paused, piece, board, score):
+        if not paused:  # Малювання гри
+            self.screen.fill((33, 33, 33))
+            self.screen.set_clip(0, 0, 600, self.GRID_HEIGHT)
+            self.draw_grid()
+            self.draw_piece(piece)
+            self.draw_board(board)
+            self.screen.set_clip(None)
+            self.draw_platform()
+            self.draw_score(score)
+        else:  # Малювання паузи
+            font = pygame.font.Font(None, 48)
+            pause_text = font.render("Paused", True, (255, 255, 255))
+            self.screen.blit(pause_text, (250, 400))
+        pygame.display.flip()
 
     def draw_game_over_screen(self):
         font = pygame.font.Font(None, 48)
