@@ -1,4 +1,5 @@
 from Piece import *
+import pygame
 
 class View:
     def __init__(self):
@@ -9,7 +10,25 @@ class View:
         self.BLOCK_SIZE = 40
         self.GRID_HEIGHT = 650
         self.FALL_EVENT = pygame.USEREVENT + 1
+        self.score = 0
+        # self.paused = False
+        self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
         pygame.time.set_timer(self.FALL_EVENT, 1500)
+
+    def draw_menu(self):
+        in_menu = True
+        while in_menu:  # Цикл меню
+            self.screen.fill((33, 33, 33))  # Заповнення екрану чорним
+            self.start_button.draw_button(self.screen)  # Малювання кнопки
+            pygame.display.flip()  # Оновлення екрану
+
+            for event in pygame.event.get():  # Обробка подій
+                if event.type == pygame.QUIT:  # Вихід із гри
+                    pygame.quit()
+                    return
+                elif event.type == pygame.MOUSEBUTTONDOWN:  # Натискання миші
+                    if self.start_button.is_clicked(event.pos):  # Початок гри
+                        in_menu = False
 
     def draw_grid(self):
         #сітка
@@ -53,6 +72,33 @@ class View:
         font = pygame.font.Font(None, 90)
         score_text = font.render(f"{score}", True, (255, 194, 236))
         self.screen.blit(score_text, (400, 655)) #змінено для виводу
+
+    # def draw_pause_on_off(self):
+    #     if not self.paused:  # Малювання гри
+    #         self.screen.fill((33, 33, 33))
+    #         self.screen.set_clip(0, 0, 600, self.GRID_HEIGHT)
+    #         self.draw_grid()
+    #         self.draw_piece(self.current_piece)
+    #         self.draw_board(self.board.board)
+    #         self.screen.set_clip(None)
+    #         self.draw_platform()
+    #         self.draw_score(self.score)
+    #     else:  # Малювання паузи
+    #         font = pygame.font.Font(None, 48)
+    #         pause_text = font.render("Paused", True, (255, 255, 255))
+    #         self.screen.blit(pause_text, (250, 400))
+    #     pygame.display.flip()
+
+    def draw_game_over_screen(self):
+        font = pygame.font.Font(None, 48)
+        game_over_text = font.render("Game Over", True, (255, 0, 0))
+        score_text = font.render(f"Final Score: {self.score}", True, (255, 255, 255))
+        restart_text = font.render("Press R to Restart", True, (255, 255, 255))
+        self.screen.fill((33, 33, 33))  # Заповнення екрану
+        self.screen.blit(game_over_text, (150, 300))
+        self.screen.blit(score_text, (150, 350))
+        self.screen.blit(restart_text, (150, 400))
+        pygame.display.flip()
 
 
 class Button:

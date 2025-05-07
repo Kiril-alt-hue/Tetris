@@ -15,10 +15,6 @@ class Piece:
             pygame.draw.rect(surface, (0, 0, 0), (x, y, block_size, block_size), 2)
 
     def rotate(self):
-        # Для SquareShape не змінюємо координати, оскільки вона симетрична
-        if isinstance(self, SquareShape):
-            return self.coordinates
-        # Для інших фігур виконуємо обертання
         return [(-y, x) for x, y in self.coordinates]  # Очікуваний список координат: [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
 
     def move(self, dx=0, dy=1):
@@ -30,6 +26,9 @@ class SquareShape(Piece):
     def __init__(self, position: list, color):
         coordinates = [(0, 0), (1, 0), (0, 1), (1, 1)]
         super().__init__(coordinates, position, color)
+
+    def rotate(self):
+        return self.coordinates
 
 
 class TShape(Piece):
