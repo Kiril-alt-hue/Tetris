@@ -1,3 +1,4 @@
+#з механіки
 
 class GameOverScreen:
     def __init__(self, view, score):

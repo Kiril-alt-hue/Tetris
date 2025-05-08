@@ -1,9 +1,10 @@
 import pygame
 
 class Board:
-    def __init__(self, view):
-        self.board = [[0] * 15 for _ in range(16)]  # Ініціалізація дошки 20x15 із нулями
-        self.view = view
+    def __init__(self, screen, BLOCK_SIZE=40):
+        self.board = [[0] * 15 for _ in range(16)]  # Ініціалізація дошки 16x15 із нулями
+        self.screen = screen
+        self.BLOCK_SIZE = BLOCK_SIZE
 
     def check_collision(self, piece, dx=0, dy=0):
         px, py = piece.position                    # Отримання позиції фігури
@@ -44,8 +45,8 @@ class Board:
                 for y in lines_to_clear:
                     for x in range(15):
                         if self.board[y][x]:
-                            pygame.draw.rect(self.view.screen, (255, 255, 255),  # Малювання білих прямокутників
-                                           (x * self.view.BLOCK_SIZE, y * self.view.BLOCK_SIZE, self.view.BLOCK_SIZE, self.view.BLOCK_SIZE))
+                            pygame.draw.rect(self.screen, (255, 255, 255),  # Малювання білих прямокутників
+                                           (x * self.BLOCK_SIZE, y * self.BLOCK_SIZE, self.BLOCK_SIZE, self.BLOCK_SIZE))
                 pygame.display.flip()               # Оновлення екрану
                 pygame.time.delay(100)              # Затримка 100 мс
             new_board = [row for i, row in enumerate(self.board) if i not in lines_to_clear]  # Створення нової дошки
@@ -58,3 +59,63 @@ class Board:
 
     def is_game_over(self, piece):
         return self.check_collision(piece)
+
+
+if __name__ == "__main__":
+    #TEST
+    pygame.init()
+    screen = pygame.display.set_mode((600, 650))
+    BLOCK_SIZE = 40
+
+    board = Board(screen, BLOCK_SIZE)
+
+
+    # Тестовий клас фігури
+    class TestPiece:
+        def __init__(self, position, coordinates, color):
+            self.position = position
+            self.coordinates = coordinates
+            self.color = color
+
+
+    print("Початок тестування класу Board:")
+
+    # Тест 1: Перевірка колізій
+    test_piece1 = TestPiece([5, 5], [(0, 0), (1, 0), (0, 1), (1, 1)], (255, 0, 0))  # Квадрат 2x2
+    print("1. Тест check_collision():", "Пройдено" if not board.check_collision(test_piece1) else "Не пройдено")
+
+    # Тест 2: Перевірка фіксації фігури
+    board.lock_piece(test_piece1)
+    print("2. Тест lock_piece():", "Пройдено" if board.board[5][5] != 0 else "Не пройдено")
+
+    # Тест 3: Перевірка очищення рядків
+    # Заповнюємо рядок для очищення
+    for x in range(15):
+        board.board[10][x] = (0, 255, 0)
+    lines_cleared = board.clear_lines()
+    print("3. Тест clear_lines():",
+          f"Пройдено ({lines_cleared} рядків очищено)" if lines_cleared > 0 else "Не пройдено")
+
+    # Тест 4: Перевірка кінця гри
+    test_piece2 = TestPiece([5, 0], [(0, 0), (1, 0), (0, 1), (1, 1)], (0, 0, 255))
+    print("4. Тест is_game_over():", "Пройдено" if not board.is_game_over(test_piece2) else "Не пройдено")
+
+    # Візуалізація дошки для наглядності
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        # Відображення дошки
+        screen.fill((0, 0, 0))
+        for y in range(16):
+            for x in range(15):
+                if board.board[y][x]:
+                    pygame.draw.rect(screen, board.board[y][x],
+                                     (x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
+
+        pygame.display.flip()
+
+    pygame.quit()
+    print("Тестування завершено!")

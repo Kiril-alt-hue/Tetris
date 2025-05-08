@@ -19,3 +19,40 @@ class Button:
 
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)
+
+
+if __name__ == "__main__":
+    #TEST
+    pygame.init()
+    screen = pygame.display.set_mode((600, 800))
+    test_button = Button([250, 200, 200, 100], (100, 200, 100), "Test Button")
+
+    running = True
+    clicked = False
+
+    while running:
+        # Обробка подій
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if test_button.is_clicked(event.pos):
+                    print("Кнопка була натиснута!")
+                    clicked = True
+
+        # Отримання позиції миші
+        mouse_pos = pygame.mouse.get_pos()
+
+        # Зміна кольору при наведенні
+        hover_color = (150, 250, 150) if test_button.rect.collidepoint(mouse_pos) else test_button.color
+
+        # Малювання
+        screen.fill((0, 0, 0))
+        test_button.color = hover_color  # Тимчасово змінюємо колір для ефекту наведення
+        test_button.draw_button(screen)
+        test_button.color = (100, 200, 100)  # Повертаємо оригінальний колір
+
+        pygame.display.flip()
+
+    pygame.quit()
+    print("Тестування завершено успішно!")
