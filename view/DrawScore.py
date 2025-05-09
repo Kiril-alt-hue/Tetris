@@ -7,7 +7,7 @@ class DrawScore:
     def draw_score(self, score):
         font = pygame.font.Font(None, 90)
         score_text = font.render(f"{score}", True, (255, 194, 236))
-        self.screen.blit(score_text, (400, 655)) #змінено для виводу
+        self.screen.blit(score_text, (400, 655))
 
 
 if __name__ == "__main__":

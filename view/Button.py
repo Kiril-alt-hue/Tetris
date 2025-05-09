@@ -1,7 +1,8 @@
 import pygame
 
+
 class Button:
-    def __init__(self, size : list, color, text):
+    def __init__(self, size: list, color, text):
         self.x = size[0]
         self.y = size[1]
         self.w = size[2]
@@ -19,7 +20,6 @@ class Button:
 
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)
-
 
 if __name__ == "__main__":
     #TEST

@@ -101,18 +101,6 @@ class Mechanika:
         self.show_game_over_screen()  # Показ екрану завершення гри
         pygame.quit()
 
-    def show_game_over_screen(self):
-        self.view.draw_game_over_screen()
-        waiting = True
-        while waiting:  # Цикл очікування перезапуску
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:  # Вихід
-                    waiting = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r:  # Перезапуск
-                        self.__init__()
-                        self.run()
-                        return
 
 if __name__ == "__main__":
     game = Mechanika()

@@ -1,6 +1,8 @@
+# import sys
+# import os
+# sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import pygame
-from Button import Button
-
+from view.Button import Button
 
 class DrawMenu:
     def __init__(self, screen):
@@ -8,34 +10,29 @@ class DrawMenu:
         self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
 
     def draw_menu(self):
-        in_menu = True
-        while in_menu: # Цикл меню
-            self.screen.fill((33, 33, 33)) # Заповнення екрану чорним
-            self.start_button.draw_button(self.screen)  # Малювання кнопки
-            pygame.display.flip() # Оновлення екрану
-
-            for event in pygame.event.get(): # Обробка подій
-                if event.type == pygame.QUIT: # Вихід із гри
-                    pygame.quit()
-                    return False  #повертаємо False для повного виходу
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+        self.screen.fill((33, 33, 33))
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return False
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if self.start_button.is_clicked(event.pos):
-                        in_menu = False
-        return True  #повертаємо True для продовження роботи
+                        return True
+            self.start_button.draw_button(self.screen)
+            pygame.display.flip()
+        return False
 
-
-if __name__ == "__main__":
-    #TEST
+def test_draw_menu():
     pygame.init()
     screen = pygame.display.set_mode((600, 800))
-    pygame.display.set_caption("Game Menu")
-
-    running = True
-    while running:
-        menu = DrawMenu(screen)
-        should_continue = menu.draw_menu()
-
-        if not should_continue:
-            running = False
-
+    menu = DrawMenu(screen)
+    menu.start_button.draw_button(screen)
+    pygame.display.flip()
+    assert menu.start_button.text == "Start Game", "Кнопка має мати текст 'Start Game'"
+    assert menu.start_button.is_clicked((250, 350)) is True, "Кнопка має реагувати на клік у межах"
     pygame.quit()
+    print("Тест DrawMenu пройдено!")
+
+if __name__ == "__main__":
+    test_draw_menu()

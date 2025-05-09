@@ -1,0 +1,18 @@
+Tetris
+├── Board.py
+├── Piece.py
+├── main.py
+├── mechanika/
+│   ├── KeyHoldHandler.py
+│   ├── KeyPressHandler.py
+├── view/
+│   ├── Button.py
+│   ├── DrawBoard.py
+│   ├── DrawMenu.py
+│   ├── DrawPauseOnOff.py
+│   ├── DrawPiece.py
+│   ├── DrawScore.py
+│   ├── GameOverScreen.py
+│   ├── Grid.py
+│   ├── Platform.py
+│   ├── icon.png
