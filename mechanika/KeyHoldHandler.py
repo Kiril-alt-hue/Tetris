@@ -14,22 +14,34 @@ class KeyHoldHandler:
         Повертає оновлені last_move_time і just_moved.
         """
         if current_time - last_move_time > move_delay:
-            if keys[pygame.K_LEFT]:
-                if not self.board.check_collision(current_piece, dx=-1):
-                    current_piece.move(dx=-1)
-                    last_move_time = current_time
-                    just_moved = True
-            if keys[pygame.K_RIGHT]:
-                if not self.board.check_collision(current_piece, dx=1):
-                    current_piece.move(dx=1)
-                    last_move_time = current_time
-                    just_moved = True
+            # if keys[pygame.K_LEFT]:
+            #     if not self.board.check_collision(current_piece, dx=-1):
+            #         current_piece.move(dx=-1)
+            #         last_move_time = current_time
+            #         just_moved = True
+            # elif keys[pygame.K_RIGHT]:
+            #     if not self.board.check_collision(current_piece, dx=1):
+            #         current_piece.move(dx=1)
+            #         last_move_time = current_time
+            #         just_moved = True
             if keys[pygame.K_DOWN]:
                 if not self.board.check_collision(current_piece, dy=1):
                     current_piece.move(dy=1)
                     last_move_time = current_time
                     just_moved = True
+            elif keys[pygame.K_LEFT]:  # Діагональ вліво-вниз
+                if not self.board.check_collision(current_piece, dx=-1, dy=1):
+                    current_piece.diagonal_left()
+                    last_move_time = current_time
+                    just_moved = True
+            elif keys[pygame.K_RIGHT]:  # Діагональ вправо-вниз
+                if not self.board.check_collision(current_piece, dx=1, dy=1):
+                    current_piece.diagonal_right()
+                    last_move_time = current_time
+                    just_moved = True
+
         return last_move_time, just_moved
+
 
 # Тестові дані
 def test_key_hold_handler():

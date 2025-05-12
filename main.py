@@ -31,14 +31,16 @@ class View:
         self.board = Board(self.screen, self.BLOCK_SIZE)
         self.score = 0
         self.game_over = False
-        self.current_piece = self.spawn_piece()
         self.clock = pygame.time.Clock()
         self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
+        self.pink_theme_button = Button([200, 470, 200, 50], (255, 105, 180), "Start Pink")
         self.move_delay = 120
         self.last_move_time = 0
         self.just_moved = False
         self.paused = False
         self.lock_time = 0
+        self.theme_colors = self.wait_for_theme_selection()
+        self.current_piece = self.spawn_piece()
 
         # Ініціалізація компонентів інтерфейсу
         self.platform = Platform(self.screen)
@@ -52,23 +54,44 @@ class View:
 
         # Ініціалізація обробників клавіш
         self.key_hold_handler = KeyHoldHandler(self.board)
-        self.key_press_handler = KeyPressHandler(self.board, self)
+        self.key_press_handler = KeyPressHandler(self.board)
+
+    def wait_for_theme_selection(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.pink_theme_button.is_clicked(event.pos):
+                        return [
+                            (255, 182, 193), (255, 192, 203), (255, 105, 180),
+                            (255, 20, 147), (219, 112, 147), (199, 21, 133), (255, 0, 127)
+                        ]
+                    elif self.start_button.is_clicked(event.pos):
+                        return [
+                            (255, 0, 0), (255, 105, 180), (0, 255, 255),
+                            (128, 0, 128), (255, 165, 0), (255, 255, 0), (0, 255, 0)
+                        ]
+            self.screen.fill((33, 33, 33))
+            self.start_button.draw_button(self.screen)
+            self.pink_theme_button.draw_button(self.screen)
+            pygame.display.flip()
 
     def spawn_piece(self):
         shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
-        colors = [(255, 0, 0), (0, 128, 0), (0, 255, 255), (128, 0, 128), (255, 165, 0), (255, 255, 0), (0, 255, 0)]
-        shape_color = random.choice(colors)
         shape_class = random.choice(shapes)
+        shape_color = random.choice(self.theme_colors)
         return shape_class([5, 0], shape_color)
 
-    def drop_piece_to_bottom(self):
-        while not self.board.check_collision(self.current_piece, dy=1):
-            self.current_piece.move(dy=1)
-        self.board.lock_piece(self.current_piece)
-        self.score += self.board.clear_lines() * 100
-        self.current_piece = self.spawn_piece()
-        if self.board.is_game_over(self.current_piece):
-            self.game_over = True
+    # def drop_piece_to_bottom(self):
+    #     while not self.board.check_collision(self.current_piece, dy=1):
+    #         self.current_piece.move(dy=1)
+    #     self.board.lock_piece(self.current_piece)
+    #     self.score += self.board.clear_lines() * 100
+    #     self.current_piece = self.spawn_piece()
+    #     if self.board.is_game_over(self.current_piece):
+    #         self.game_over = True
 
     def run(self):
         if not self.draw_menu.draw_menu():

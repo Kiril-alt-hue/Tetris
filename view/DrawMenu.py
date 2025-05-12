@@ -8,6 +8,7 @@ class DrawMenu:
     def __init__(self, screen):
         self.screen = screen
         self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
+        self.pink_theme_button = Button([200, 470, 200, 50], (255, 105, 180), "Start Pink")
 
     def draw_menu(self):
         self.screen.fill((33, 33, 33))
@@ -19,7 +20,10 @@ class DrawMenu:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if self.start_button.is_clicked(event.pos):
                         return True
+                    elif self.pink_theme_button.is_clicked(event.pos):
+                        return True
             self.start_button.draw_button(self.screen)
+            self.pink_theme_button.draw_button(self.screen)
             pygame.display.flip()
         return False
 

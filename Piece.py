@@ -14,12 +14,22 @@ class Piece:
             pygame.draw.rect(surface, self.color, (x, y, block_size, block_size))
             pygame.draw.rect(surface, (0, 0, 0), (x, y, block_size, block_size), 2)
 
-    def rotate(self):
-        return [(-y, x) for x, y in self.coordinates]  # Очікуваний список координат: [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+    def rotate(self, n=1):
+        """Повертає координати фігури після повороту на 90*n градусів (за годинниковою стрілкою)."""
+        n = n % 4  # Оскільки поворот на 360° дає те саме, що й 0°
+        for _ in range(n):
+            self.coordinates = [(-y, x) for x, y in self.coordinates]
+        return self.coordinates
 
     def move(self, dx=0, dy=1):
         self.position[0] += dx
-        self.position[1] += dy  # Очікувана позиція: [x, y]
+        self.position[1] += dy
+
+    def diagonal_right(self):
+        self.move(dx=1, dy=1)
+
+    def diagonal_left(self):
+        self.move(dx=-1, dy=1)
 
 
 class SquareShape(Piece):
@@ -27,7 +37,7 @@ class SquareShape(Piece):
         coordinates = [(0, 0), (1, 0), (0, 1), (1, 1)]
         super().__init__(coordinates, position, color)
 
-    def rotate(self):
+    def rotate(self, n=1):
         return self.coordinates
 
 

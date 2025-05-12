@@ -5,9 +5,8 @@ from Board import Board
 from Piece import SquareShape
 
 class KeyPressHandler:
-    def __init__(self, board, view):
+    def __init__(self, board):
         self.board = board
-        self.view = view
 
     def handle_key_presses(self, event, current_piece, paused, lock_time):
         """
@@ -27,7 +26,8 @@ class KeyPressHandler:
                     current_piece.coordinates = original_coords
                     current_piece.position = original_pos
             elif event.key == pygame.K_SPACE:
-                self.view.drop_piece_to_bottom()
+                while not self.board.check_collision(current_piece, dy=1):
+                    current_piece.move(dy=1)
                 drop_triggered = True
         return paused, lock_time, drop_triggered
 
