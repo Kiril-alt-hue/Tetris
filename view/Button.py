@@ -9,7 +9,7 @@ class Button:
         self.h = size[3]
         self.color = color
         self.text = text
-        self.font = pygame.font.SysFont(None, 50)
+        self.font = pygame.font.SysFont('impact', 30)
         self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
 
     def draw_button(self, surface):

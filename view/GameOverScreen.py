@@ -1,52 +1,60 @@
-# import sys
-# import os
-# sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import pygame
+from gameMain.ThemeSelection import ThemeSelection
+
 
 class GameOverScreen:
-    def __init__(self, view):
-        self.view = view
+    def __init__(self, screen, score):
+        self.screen = screen
+        self.score = score
+        self.font = pygame.font.SysFont('impact', 40)
 
-    def show_game_over_screen(self):
-        font = pygame.font.Font(None, 48)
-        game_over_text = font.render("Game Over", True, (255, 0, 0))
-        score_text = font.render(f"Final Score: {self.view.score}", True, (255, 255, 255))
-        restart_text = font.render("Press R to Restart", True, (255, 255, 255))
-        self.view.screen.fill((33, 33, 33))
-        self.view.screen.blit(game_over_text, (150, 300))
-        self.view.screen.blit(score_text, (150, 350))
-        self.view.screen.blit(restart_text, (150, 400))
+        self.game_over_text = self.font.render("Game Over", True, (255, 194, 236))
+        self.score_text = self.font.render(f"Final Score: {self.score}", True, (255, 237, 249))
+        self.menu_text = self.font.render("Press M to Main Menu", True, (255, 237, 249))
+        self.restart_text = self.font.render("Press R to Restart", True, (255, 237, 249))
+
+        self.draw_screen()
+
+    def draw_screen(self):
+        self.screen.fill((33, 33, 33))
+        self.screen.blit(self.game_over_text, (150, 300))
+        self.screen.blit(self.score_text, (150, 350))
+        self.screen.blit(self.restart_text, (150, 400))
+        self.screen.blit(self.menu_text, (150, 450))
         pygame.display.flip()
-        waiting = True
-        while waiting:
+
+    def handle_input(self):
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    waiting = False
+                    pygame.quit()
+                    exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
-                        self.view.__init__()
-                        self.view.run()
-                        return
-        pygame.quit()
+                        return 'restart'
+                    elif event.key == pygame.K_m:
+                        return 'menu'
 
-def test_game_over_screen():
-    pygame.init()
-    screen = pygame.display.set_mode((600, 800))
-
-    class MockView:
-        def __init__(self):
-            self.screen = screen
-            self.score = 100
-
-        def run(self):
-            pass
-
-    view = MockView()
-    game_over_screen = GameOverScreen(view)
-    game_over_screen.show_game_over_screen()
-    pygame.quit()
-    assert game_over_screen.view == view, "View має бути правильно ініціалізованим"
-    print("Тест GameOverScreen пройдено!")
 
 if __name__ == "__main__":
-    test_game_over_screen()
+    pygame.init()
+    screen = pygame.display.set_mode((600, 800))
+    test_score = 1488
+    game_over = GameOverScreen(screen, test_score)
+    theme_selection = ThemeSelection(screen)
+
+    running = True
+    while running:
+        action = game_over.handle_input()
+
+        if action == 'restart':
+            print("Restarting game...")
+            test_score += 100
+            game_over = GameOverScreen(screen, test_score)
+        elif action == 'menu':
+            print("Returning to menu...")
+            theme_selection.draw()
+
+        pygame.time.delay(100)
+
+    pygame.quit()
