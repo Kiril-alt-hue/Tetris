@@ -1,11 +1,10 @@
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
 import pygame
 import random
-from view.Button import Button
+
+# Імпорти з вашого оновленого коду
 from view.DrawBoard import DrawBoard
-from view.DrawMenu import DrawMenu
 from view.DrawPauseOnOff import DrawPauseOnOff
 from view.DrawPiece import DrawPiece
 from view.DrawScore import DrawScore
@@ -16,139 +15,108 @@ from Piece import SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape
 from Board import Board
 from mechanika.KeyHoldHandler import KeyHoldHandler
 from mechanika.KeyPressHandler import KeyPressHandler
+from gameMain.SpawnPiece import SpawnPiece
+from gameMain.ThemeSelection import ThemeSelection
+from view.GameOverScreen import GameOverScreen
 
-class View:
-    def __init__(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode((600, 800))
-        pygame.display.set_icon(pygame.image.load('view/icon.png'))
-        pygame.display.set_caption("Тетріс")
-        self.BLOCK_SIZE = 40
-        self.GRID_HEIGHT = 650
-        self.FALL_EVENT = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.FALL_EVENT, 1500)
+# Функція для ініціалізації гри
+def initialize_game(screen):
+    BLOCK_SIZE = 40
+    grid = Grid(screen)
+    platform = Platform(screen)
+    board = Board(screen, BLOCK_SIZE)
+    key_hold_handler = KeyHoldHandler(board)
+    draw_piece = DrawPiece(screen)
+    draw_board = DrawBoard(screen, BLOCK_SIZE)
+    draw_score = DrawScore(screen)
+    draw_pause = DrawPauseOnOff(screen, grid, draw_piece, draw_board, platform, draw_score)
+    return grid, platform, board, key_hold_handler, draw_pause
 
-        self.board = Board(self.screen, self.BLOCK_SIZE)
-        self.score = 0
-        self.game_over = False
-        self.clock = pygame.time.Clock()
-        self.start_button = Button([200, 300, 200, 150], (100, 200, 100), "Start Game")
-        self.pink_theme_button = Button([200, 470, 200, 50], (255, 105, 180), "Start Pink")
-        self.move_delay = 120
-        self.last_move_time = 0
-        self.just_moved = False
-        self.paused = False
-        self.lock_time = 0
-        self.theme_colors = self.wait_for_theme_selection()
-        self.current_piece = self.spawn_piece()
+# Функція для запуску одного сеансу гри
+def run_game(screen, theme_colors, theme_selection, clock):
+    grid, platform, board, key_hold_handler, draw_pause = initialize_game(screen)
+    spawner = SpawnPiece(theme_colors)
+    current_piece = spawner.spawn_piece()
 
-        # Ініціалізація компонентів інтерфейсу
-        self.platform = Platform(self.screen)
-        self.grid = Grid(self.screen)
-        self.draw_board = DrawBoard(self.screen, self.BLOCK_SIZE)
-        self.draw_piece = DrawPiece(self.screen)
-        self.draw_score = DrawScore(self.screen)
-        self.draw_menu = DrawMenu(self.screen)
-        self.draw_pause = DrawPauseOnOff(self.screen, self.grid, self.draw_piece, self.draw_board, self.platform, self.draw_score)
-        self.game_over_screen = GameOverScreen(self)
+    game_over = False
+    just_moved = False
+    paused = False
+    last_move_time = 0
+    move_delay = 120
+    lock_time = 0
+    score = 0
+    FALL_EVENT = pygame.USEREVENT + 1
+    pygame.time.set_timer(FALL_EVENT, 1000)
 
-        # Ініціалізація обробників клавіш
-        self.key_hold_handler = KeyHoldHandler(self.board)
-        self.key_press_handler = KeyPressHandler(self.board)
+    key_press_handler = KeyPressHandler(board)
 
-    def wait_for_theme_selection(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.pink_theme_button.is_clicked(event.pos):
-                        return [
-                            (255, 182, 193), (255, 192, 203), (255, 105, 180),
-                            (255, 20, 147), (219, 112, 147), (199, 21, 133), (255, 0, 127)
-                        ]
-                    elif self.start_button.is_clicked(event.pos):
-                        return [
-                            (255, 0, 0), (255, 105, 180), (0, 255, 255),
-                            (128, 0, 128), (255, 165, 0), (255, 255, 0), (0, 255, 0)
-                        ]
-            self.screen.fill((33, 33, 33))
-            self.start_button.draw_button(self.screen)
-            self.pink_theme_button.draw_button(self.screen)
-            pygame.display.flip()
+    while not game_over:
+        current_time = pygame.time.get_ticks()
+        clock.tick(60)
 
-    def spawn_piece(self):
-        shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
-        shape_class = random.choice(shapes)
-        shape_color = random.choice(self.theme_colors)
-        return shape_class([5, 0], shape_color)
+        keys = pygame.key.get_pressed()
+        if not paused:
+            last_move_time, just_moved = key_hold_handler.handle_key_holds(
+                keys, current_piece, current_time, last_move_time, move_delay, just_moved
+            )
 
-    # def drop_piece_to_bottom(self):
-    #     while not self.board.check_collision(self.current_piece, dy=1):
-    #         self.current_piece.move(dy=1)
-    #     self.board.lock_piece(self.current_piece)
-    #     self.score += self.board.clear_lines() * 100
-    #     self.current_piece = self.spawn_piece()
-    #     if self.board.is_game_over(self.current_piece):
-    #         self.game_over = True
-
-    def run(self):
-        if not self.draw_menu.draw_menu():
-            return
-
-        while not self.game_over:
-            current_time = pygame.time.get_ticks()
-            self.clock.tick(60)
-            self.just_moved = False
-
-            # Обробка утримання клавіш
-            keys = pygame.key.get_pressed()
-            if not self.paused:
-                self.last_move_time, self.just_moved = self.key_hold_handler.handle_key_holds(
-                    keys, self.current_piece, current_time, self.last_move_time, self.move_delay, self.just_moved
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == FALL_EVENT and not paused:
+                if not board.check_collision(current_piece, dy=1):
+                    current_piece.move(dy=1)
+                    lock_time = 0
+                else:
+                    if lock_time == 0:
+                        lock_time = pygame.time.get_ticks()
+                    elif pygame.time.get_ticks() - lock_time > 500:
+                        board.lock_piece(current_piece)
+                        score += board.clear_lines() * 100
+                        current_piece = spawner.spawn_piece()
+                        lock_time = 0
+                        if board.is_game_over(current_piece):
+                            game_over = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    paused = not paused
+                paused, lock_time, drop_triggered = key_press_handler.handle_key_presses(
+                    event, current_piece, paused, lock_time
                 )
+                if drop_triggered:
+                    last_move_time = current_time
 
-            # Обробка подій
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.game_over = True
-                elif event.type == self.FALL_EVENT and not self.paused:
-                    if not self.board.check_collision(self.current_piece, dy=1):
-                        self.current_piece.move(dy=1)
-                        self.lock_time = 0
-                    else:
-                        if self.lock_time == 0:
-                            self.lock_time = pygame.time.get_ticks()
-                        elif pygame.time.get_ticks() - self.lock_time > 500:
-                            self.board.lock_piece(self.current_piece)
-                            self.score += self.board.clear_lines() * 100
-                            self.current_piece = self.spawn_piece()
-                            self.lock_time = 0
-                            if self.board.is_game_over(self.current_piece):
-                                self.game_over = True
-                elif event.type == pygame.KEYDOWN:
-                    self.paused, self.lock_time, drop_triggered = self.key_press_handler.handle_key_presses(
-                        event, self.current_piece, self.paused, self.lock_time
-                    )
-                    if drop_triggered:
-                        self.last_move_time = current_time
+        if not game_over:
+            draw_pause.draw_pause_on_off(paused, current_piece, board.board, score)
 
-            if not self.game_over:
-                self.draw_pause.draw_pause_on_off(self.paused, self.current_piece, self.board.board, self.score)
+    game_over_screen = GameOverScreen(screen, score)
+    while True:
+        action = game_over_screen.handle_input()
+        if action == 'restart':
+            return True
+        elif action == 'menu':
+            return False
+        pygame.time.delay(100)
 
-        self.game_over_screen.show_game_over_screen()
-
-def test_view():
-    pygame.init()
-    view = View()
-    assert view.BLOCK_SIZE == 40, "BLOCK_SIZE має бути 40"
-    assert view.GRID_HEIGHT == 650, "GRID_HEIGHT має бути 650"
-    assert isinstance(view.board, Board), "board має бути екземпляром Board"
-    assert isinstance(view.current_piece, (SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape)), "current_piece має бути фігурою"
-    pygame.quit()
-    print("Тест View пройдено!")
-
+# Головна програма
 if __name__ == "__main__":
-    game = View()
-    game.run()
+    pygame.init()
+    screen = pygame.display.set_mode((600, 800))
+    pygame.display.set_icon(pygame.image.load('view/icon.png'))
+    pygame.display.set_caption("Tetris")
+    clock = pygame.time.Clock()
+
+    theme_selection = ThemeSelection(screen)
+
+    while True:  # Outer loop for theme selection
+        theme_colors = theme_selection.draw()
+        if theme_colors is None:
+            break
+
+        while True:  # Inner loop for game sessions
+            restart = run_game(screen, theme_colors, theme_selection, clock)
+            if not restart:
+                break  # Exit to theme selection
+
+    pygame.quit()
