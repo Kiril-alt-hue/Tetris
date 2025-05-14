@@ -8,7 +8,7 @@ class GameOverScreen:
         self.score = score
         self.font = pygame.font.SysFont('impact', 40)
 
-        self.game_over_text = self.font.render("Game Over", True, (255, 194, 236))
+        self.game_over_text = self.font.render("Game Over", True, (201, 0, 97))
         self.score_text = self.font.render(f"Final Score: {self.score}", True, (255, 237, 249))
         self.menu_text = self.font.render("Press M to Main Menu", True, (255, 237, 249))
         self.restart_text = self.font.render("Press R to Restart", True, (255, 237, 249))

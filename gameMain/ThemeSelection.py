@@ -18,13 +18,13 @@ class ThemeSelection:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.pink_theme_button.is_clicked(event.pos):
                         return [
-                            (255, 182, 193), (255, 192, 203), (255, 105, 180),
-                            (255, 20, 147), (219, 112, 147), (199, 21, 133), (255, 0, 127)
+                            (255, 0, 123), (171, 0, 82), (176, 33, 102),
+                            (179, 68, 121), (217, 91, 152), (227, 54, 138), (230, 124, 175)
                         ]
                     elif self.start_button.is_clicked(event.pos):
                         return [
-                            (255, 0, 0), (255, 105, 180), (0, 255, 255),
-                            (128, 0, 128), (255, 165, 0), (255, 255, 0), (0, 255, 0)
+                            (214, 21, 21), (214, 92, 21), (235, 208, 9),
+                            (25, 150, 3), (20, 140, 204), (5, 61, 181), (122, 5, 181)
                         ]
             self.screen.fill((33, 33, 33))
             self.start_button.draw_button(self.screen)

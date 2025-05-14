@@ -60,24 +60,6 @@ class Board:
     def is_game_over(self, piece):
         return self.check_collision(piece)
 
-#додала новий метод
-
-    def draw(self, piece):
-        for y in range(16):
-            for x in range(15):
-                if self.board[y][x]:
-                    pygame.draw.rect(self.screen, self.board[y][x],
-                                     (x * self.BLOCK_SIZE, y * self.BLOCK_SIZE, self.BLOCK_SIZE, self.BLOCK_SIZE))
-        px, py = piece.position
-        for x, y in piece.coordinates:
-            board_x = px + x
-            board_y = py + y
-            if board_y >= 0 and board_y < 16 and board_x >= 0 and board_x < 15:
-                pygame.draw.rect(self.screen, piece.color,
-                                 (board_x * self.BLOCK_SIZE, board_y * self.BLOCK_SIZE, self.BLOCK_SIZE,
-                                  self.BLOCK_SIZE))
-
-
 if __name__ == "__main__":
     #TEST
     pygame.init()

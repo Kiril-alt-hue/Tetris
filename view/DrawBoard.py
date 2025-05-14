@@ -5,7 +5,7 @@ class DrawBoard:
     def __init__(self, screen, block_size):
         self.screen = screen
         self.BLOCK_SIZE = block_size
-        self.BORDER_COLOUR = (46, 46, 46)
+        self.BORDER_COLOUR = (33, 33, 33)
         self.EMPTY_CELL = 0
         self.BORDER_WIDTH = 2
 
