@@ -39,4 +39,17 @@ def test_draw_menu():
     print("Тест DrawMenu пройдено!")
 
 if __name__ == "__main__":
-    test_draw_menu()
+    # test_draw_menu()
+    # TEST
+    pygame.init()
+    screen = pygame.display.set_mode((600, 800))
+
+    running = True
+    while running:
+        menu = DrawMenu(screen)
+        should_continue = menu.draw_menu()
+
+        if not should_continue:
+            running = False
+
+    pygame.quit()

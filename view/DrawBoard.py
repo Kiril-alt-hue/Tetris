@@ -5,7 +5,7 @@ class DrawBoard:
     def __init__(self, screen, block_size):
         self.screen = screen
         self.BLOCK_SIZE = block_size
-        self.BORDER_COLOUR = (28, 28, 28)
+        self.BORDER_COLOUR = (46, 46, 46)
         self.EMPTY_CELL = 0
         self.BORDER_WIDTH = 2
 
@@ -47,4 +47,38 @@ def test_draw_board():
     print("Тест DrawBoard пройдено!")
 
 if __name__ == "__main__":
-    test_draw_board()
+    # test_draw_board()
+    # TEST
+    pygame.init()
+    screen = pygame.display.set_mode((600, 800))
+
+    BLOCK_SIZE = 40
+    BOARD_WIDTH = 60
+    BOARD_HEIGHT = 60
+
+    test_board = [[0 for _ in range(BOARD_WIDTH)] for _ in range(BOARD_HEIGHT)]
+
+    test_board[5][3] = (255, 0, 0)  # Червоний блок
+    test_board[6][3] = (255, 0, 0)
+    test_board[7][3] = (255, 0, 0)
+    test_board[7][4] = (0, 255, 0)  # Зелений блок
+    test_board[7][5] = (0, 0, 255)  # Синій блок
+    test_board[15][2] = (255, 255, 0)  # Жовтий блок
+
+    drawer = DrawBoard(screen, BLOCK_SIZE)
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+
+        screen.fill((0, 0, 0))
+        drawer.draw_board(test_board)
+        pygame.display.flip()
+
+    pygame.quit()
+    print("Тестування завершено успішно!")
