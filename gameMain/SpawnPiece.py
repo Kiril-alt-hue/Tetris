@@ -10,4 +10,4 @@ class SpawnPiece:
         shapes = [SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape]
         shape_class = random.choice(shapes)
         shape_color = random.choice(self.theme_colors)
-        return shape_class([5, 0], shape_color)
+        return shape_class([6, 0], shape_color)
