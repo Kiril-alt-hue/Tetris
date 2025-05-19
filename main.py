@@ -2,8 +2,7 @@ import sys
 import os
 import pygame
 import random
-
-# Імпорти з вашого оновленого коду
+from sound.SoundManager import SoundManager
 from view.DrawBoard import DrawBoard
 from view.DrawPauseOnOff import DrawPauseOnOff
 from view.DrawPiece import DrawPiece
@@ -17,9 +16,7 @@ from mechanika.KeyHoldHandler import KeyHoldHandler
 from mechanika.KeyPressHandler import KeyPressHandler
 from gameMain.SpawnPiece import SpawnPiece
 from gameMain.ThemeSelection import ThemeSelection
-from view.GameOverScreen import GameOverScreen
 
-# Функція для ініціалізації гри
 def initialize_game(screen):
     BLOCK_SIZE = 40
     grid = Grid(screen)
@@ -32,8 +29,7 @@ def initialize_game(screen):
     draw_pause = DrawPauseOnOff(screen, grid, draw_piece, draw_board, platform, draw_score)
     return grid, platform, board, key_hold_handler, draw_pause
 
-# Функція для запуску одного сеансу гри
-def run_game(screen, theme_colors, theme_selection, clock):
+def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
     grid, platform, board, key_hold_handler, draw_pause = initialize_game(screen)
     spawner = SpawnPiece(theme_colors)
     current_piece = spawner.spawn_piece()
@@ -73,50 +69,70 @@ def run_game(screen, theme_colors, theme_selection, clock):
                         lock_time = pygame.time.get_ticks()
                     elif pygame.time.get_ticks() - lock_time > 500:
                         board.lock_piece(current_piece)
-                        score += board.clear_lines() * 100
+                        sound_manager.play_drop_sound()
+                        pygame.event.pump()
+                        lines_cleared = board.clear_lines()
+                        if lines_cleared > 0:
+                            sound_manager.play_clear_sound()
+                        score += lines_cleared * 100
                         current_piece = spawner.spawn_piece()
                         lock_time = 0
                         if board.is_game_over(current_piece):
                             game_over = True
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    paused = not paused
+                    game_over = True  # Перехід до Game Over
+                    break  # Вихід із циклу подій
+                prev_paused = paused  # Зберігаємо попередній стан паузи
                 paused, lock_time, drop_triggered = key_press_handler.handle_key_presses(
                     event, current_piece, paused, lock_time
                 )
+                # Керуємо музикою, якщо стан паузи змінився
+                if paused != prev_paused:
+                    if paused:
+                        sound_manager.pause_music()
+                    else:
+                        sound_manager.unpause_music()
                 if drop_triggered:
                     last_move_time = current_time
+            sound_manager.play_next_track(event)
 
         if not game_over:
             draw_pause.draw_pause_on_off(paused, current_piece, board.board, score)
 
-    game_over_screen = GameOverScreen(screen, score)
+    game_over_screen = GameOverScreen(screen, score, sound_manager)
     while True:
         action = game_over_screen.handle_input()
         if action == 'restart':
+            sound_manager.stop_music()
+            sound_manager.play_game_music()
             return True
         elif action == 'menu':
+            sound_manager.stop_music()
+            sound_manager.play_menu_music()
             return False
         pygame.time.delay(100)
 
-# Головна програма
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((600, 800))
-    pygame.display.set_icon(pygame.image.load('view/icon.png'))
+    pygame.display.set_icon( pygame.image.load('view/icon.png'))
     pygame.display.set_caption("Tetris")
     clock = pygame.time.Clock()
 
-    theme_selection = ThemeSelection(screen)
+    sound_manager = SoundManager()
+    sound_manager.play_menu_music()
 
-    while True:  # Outer loop for theme selection
+    theme_selection = ThemeSelection(screen, sound_manager)
+
+    while True:
         theme_colors = theme_selection.draw()
         if theme_colors is None:
             break
 
-        while True:  # Inner loop for game sessions
-            restart = run_game(screen, theme_colors, theme_selection, clock)
+        while True:
+            restart = run_game(screen, theme_colors, theme_selection, clock, sound_manager)
             if not restart:
-                break  # Exit to theme selection
+                break
 
     pygame.quit()
