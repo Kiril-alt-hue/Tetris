@@ -7,7 +7,7 @@ class ThemeSelection:
         self.sound_manager = sound_manager
         self.start_button = Button([150, 300, 300, 150], (100, 200, 100), "Start Classic Game")
         self.pink_theme_button = Button([150, 470, 300, 100], (255, 105, 180), "Start Pink")
-        self.font = pygame.font.SysFont('jokerman', 50)
+        self.font = pygame.font.Font('fonts/jokerman.ttf', 50)
         self.menu_text = self.font.render("Main Menu", True, (240, 240, 240))
 
     def draw(self):
