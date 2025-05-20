@@ -31,9 +31,9 @@ class DrawPauseOnOff:
             self.platform.draw_platform()
             self.draw_score.draw_score(score)
         else:
-            font = pygame.font.Font(None, 48)
-            pause_text = font.render("Paused", True, (255, 255, 255))
-            self.screen.blit(pause_text, (250, 400))
+            font = pygame.font.SysFont('jokerman', 50)
+            pause_text = font.render("Pause", True, (240, 240, 240))
+            self.screen.blit(pause_text, (230, 330))
         pygame.display.flip()
 
 def test_draw_pause_on_off():
