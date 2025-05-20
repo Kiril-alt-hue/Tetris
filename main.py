@@ -10,12 +10,14 @@ from view.DrawScore import DrawScore
 from view.GameOverScreen import GameOverScreen
 from view.Grid import Grid
 from view.Platform import Platform
+from view.DrawTimer import DrawTimer  # Додано імпорт
 from Piece import SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape
 from Board import Board
 from mechanika.KeyHoldHandler import KeyHoldHandler
 from mechanika.KeyPressHandler import KeyPressHandler
 from gameMain.SpawnPiece import SpawnPiece
 from gameMain.ThemeSelection import ThemeSelection
+from gameMain.Timer import Timer  # Додано імпорт
 
 def initialize_game(screen):
     BLOCK_SIZE = 40
@@ -26,13 +28,18 @@ def initialize_game(screen):
     draw_piece = DrawPiece(screen)
     draw_board = DrawBoard(screen, BLOCK_SIZE)
     draw_score = DrawScore(screen)
-    draw_pause = DrawPauseOnOff(screen, grid, draw_piece, draw_board, platform, draw_score)
+    draw_timer = DrawTimer(screen)  # Створення DrawTimer
+    draw_pause = DrawPauseOnOff(
+        screen, grid, draw_piece, draw_board, platform, draw_score, draw_timer  # Додано draw_timer
+    )
     return grid, platform, board, key_hold_handler, draw_pause
 
 def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
     grid, platform, board, key_hold_handler, draw_pause = initialize_game(screen)
     spawner = SpawnPiece(theme_colors)
     current_piece = spawner.spawn_piece()
+    game_timer = Timer()  # Створення таймера
+    game_timer.start()  # Запуск таймера
 
     game_over = False
     just_moved = False
@@ -48,6 +55,7 @@ def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
 
     while not game_over:
         current_time = pygame.time.get_ticks()
+        seconds = game_timer.get_current_time()  # Отримання часу
         clock.tick(60)
 
         keys = pygame.key.get_pressed()
@@ -81,13 +89,12 @@ def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
                             game_over = True
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    game_over = True  # Перехід до Game Over
-                    break  # Вихід із циклу подій
-                prev_paused = paused  # Зберігаємо попередній стан паузи
+                    game_over = True
+                    break
+                prev_paused = paused
                 paused, lock_time, drop_triggered = key_press_handler.handle_key_presses(
                     event, current_piece, paused, lock_time
                 )
-                # Керуємо музикою, якщо стан паузи змінився
                 if paused != prev_paused:
                     if paused:
                         sound_manager.pause_music()
@@ -98,7 +105,7 @@ def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
             sound_manager.play_next_track(event)
 
         if not game_over:
-            draw_pause.draw_pause_on_off(paused, current_piece, board.board, score)
+            draw_pause.draw_pause_on_off(paused, current_piece, board.board, score, seconds)  # Додано seconds
 
     game_over_screen = GameOverScreen(screen, score, sound_manager)
     while True:
@@ -116,7 +123,7 @@ def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((600, 800))
-    pygame.display.set_icon( pygame.image.load('view/icon.png'))
+    pygame.display.set_icon(pygame.image.load('view/icon.png'))
     pygame.display.set_caption("Tetris")
     clock = pygame.time.Clock()
 
