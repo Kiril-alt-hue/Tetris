@@ -11,16 +11,17 @@ from Board import Board
 from Piece import SquareShape
 
 class DrawPauseOnOff:
-    def __init__(self, screen, grid: Grid, draw_piece: DrawPiece, draw_board: DrawBoard, platform: Platform, draw_score: DrawScore):
+    def __init__(self, screen, grid: Grid, draw_piece: DrawPiece, draw_next_piece : DrawPiece, draw_board: DrawBoard, platform: Platform, draw_score: DrawScore):
         self.screen = screen
         self.grid = grid
         self.draw_piece = draw_piece
+        self.draw_next_piece = draw_next_piece
         self.draw_board = draw_board
         self.platform = platform
         self.draw_score = draw_score
         self.GRID_HEIGHT = 650
 
-    def draw_pause_on_off(self, paused, piece, board, score):
+    def draw_pause_on_off(self, paused, piece, next_piece, board, score):
         if not paused:
             self.screen.fill((33, 33, 33))
             self.screen.set_clip(0, 0, 600, self.GRID_HEIGHT)
@@ -29,6 +30,7 @@ class DrawPauseOnOff:
             self.draw_board.draw_board(board)
             self.screen.set_clip(None)
             self.platform.draw_platform()
+            self.draw_next_piece.draw_piece(next_piece)
             self.draw_score.draw_score(score)
         else:
             font = pygame.font.Font(None, 48)

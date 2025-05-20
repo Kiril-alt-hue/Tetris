@@ -1,7 +1,5 @@
 import sys
-import os
 import pygame
-import random
 from sound.SoundManager import SoundManager
 from view.DrawBoard import DrawBoard
 from view.DrawPauseOnOff import DrawPauseOnOff
@@ -10,11 +8,10 @@ from view.DrawScore import DrawScore
 from view.GameOverScreen import GameOverScreen
 from view.Grid import Grid
 from view.Platform import Platform
-from Piece import SquareShape, TShape, StairShape1, StairShape2, LShape1, LShape2, LineShape
 from Board import Board
 from mechanika.KeyHoldHandler import KeyHoldHandler
 from mechanika.KeyPressHandler import KeyPressHandler
-from gameMain.SpawnPiece import SpawnPiece
+from gameMain.SpawnPiece import SpawnPiece, SpawnNextPiece
 from gameMain.ThemeSelection import ThemeSelection
 
 def initialize_game(screen):
@@ -24,15 +21,18 @@ def initialize_game(screen):
     board = Board(screen, BLOCK_SIZE)
     key_hold_handler = KeyHoldHandler(board)
     draw_piece = DrawPiece(screen)
+    draw_next_piece = DrawPiece(screen)
     draw_board = DrawBoard(screen, BLOCK_SIZE)
     draw_score = DrawScore(screen)
-    draw_pause = DrawPauseOnOff(screen, grid, draw_piece, draw_board, platform, draw_score)
+    draw_pause = DrawPauseOnOff(screen, grid, draw_piece, draw_next_piece, draw_board, platform, draw_score)
     return grid, platform, board, key_hold_handler, draw_pause
 
 def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
     grid, platform, board, key_hold_handler, draw_pause = initialize_game(screen)
     spawner = SpawnPiece(theme_colors)
+    spawner_new = SpawnNextPiece(theme_colors)
     current_piece = spawner.spawn_piece()
+    new_piece = spawner_new.spawn_piece()
 
     game_over = False
     just_moved = False
@@ -75,7 +75,8 @@ def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
                         if lines_cleared > 0:
                             sound_manager.play_clear_sound()
                         score += lines_cleared * 100
-                        current_piece = spawner.spawn_piece()
+                        current_piece = spawner_new.return_piece()
+                        new_piece = spawner_new.spawn_piece()
                         lock_time = 0
                         if board.is_game_over(current_piece):
                             game_over = True
@@ -98,7 +99,7 @@ def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
             sound_manager.play_next_track(event)
 
         if not game_over:
-            draw_pause.draw_pause_on_off(paused, current_piece, board.board, score)
+            draw_pause.draw_pause_on_off(paused, current_piece, new_piece, board.board, score)
 
     game_over_screen = GameOverScreen(screen, score, sound_manager)
     while True:

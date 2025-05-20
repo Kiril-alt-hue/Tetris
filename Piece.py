@@ -34,7 +34,7 @@ class Piece:
 
 class SquareShape(Piece):
     def __init__(self, position: list, color):
-        coordinates = [(0, 0), (1, 0), (0, 1), (1, 1)]
+        coordinates = [(0, -1), (1, -1), (0, 0), (1, 0)]
         super().__init__(coordinates, position, color)
 
     def rotate(self, n=1):
