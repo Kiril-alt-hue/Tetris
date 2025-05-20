@@ -7,6 +7,7 @@ class ThemeSelection:
         self.sound_manager = sound_manager
         self.start_button = Button([150, 300, 300, 150], (100, 200, 100), "Start Classic Game")
         self.pink_theme_button = Button([150, 470, 300, 100], (255, 105, 180), "Start Pink")
+        self.leave_button = Button([150, 590, 300, 100], (200, 50, 50), "Leave Game")  #Нова кнопка
         self.font = pygame.font.Font('fonts/jokerman.ttf', 50)
         self.menu_text = self.font.render("Main Menu", True, (240, 240, 240))
 
@@ -31,8 +32,12 @@ class ThemeSelection:
                             (214, 21, 21), (214, 92, 21), (235, 208, 9),
                             (25, 150, 3), (20, 140, 204), (5, 61, 181), (122, 5, 181)
                         ]
+                    elif self.leave_button.is_clicked(event.pos):  #Обробка натискання кнопки "Leave Game"
+                        pygame.quit()
+                        sys.exit()
             self.screen.fill((33, 33, 33))
             self.start_button.draw_button(self.screen)
             self.pink_theme_button.draw_button(self.screen)
+            self.leave_button.draw_button(self.screen)  #Відображення нової кнопки
             self.screen.blit(self.menu_text, (165, 80))
             pygame.display.flip()
