@@ -107,7 +107,7 @@ def run_game(screen, theme_colors, theme_selection, clock, sound_manager):
         if not game_over:
             draw_pause.draw_pause_on_off(paused, current_piece, new_piece, board.board, score, seconds)
 
-    game_over_screen = GameOverScreen(screen, score, sound_manager)
+    game_over_screen = GameOverScreen(screen, score, sound_manager, seconds)
     while True:
         action = game_over_screen.handle_input()
         if action == 'restart':
