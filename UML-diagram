@@ -1,0 +1,232 @@
+@startuml Tetris UML Diagram (Compact)
+
+' Глобальні класи
+class Board {
+  -board: int[][]
+  -screen
+  -BLOCK_SIZE
+  +check_collision(piece, dx, dy): boolean
+  +lock_piece(piece)
+  +clear_lines(): int
+  +is_game_over(piece): boolean
+}
+
+class Piece {
+  -coordinates
+  -position
+  -color
+  +draw(surface, block_size)
+  +rotate(n): list
+  +move(dx, dy)
+  +diagonal_right()
+  +diagonal_left()
+}
+
+class SquareShape {
+  +rotate(n): list
+}
+package "Piece Variants" {
+  class TShape
+  class StairShape1
+  class StairShape2
+  class LShape1
+  class LShape2
+  class LineShape
+}
+
+' Пакети за директоріями
+package "mechanika" {
+  class KeyHoldHandler {
+    -board
+    +handle_key_holds(keys, piece, current_time, last_move_time, move_delay, just_moved): tuple
+  }
+  class KeyPressHandler {
+    -board
+    +handle_key_presses(event, piece, paused, lock_time): tuple
+  }
+}
+
+package "view" {
+  class Button {
+    -x, -y, -w, -h
+    -color, -text
+    +draw_button(surface)
+    +is_clicked(pos): boolean
+  }
+  class DrawBoard {
+    -screen
+    -BLOCK_SIZE
+    +draw_board(board)
+  }
+  class DrawPauseOnOff {
+    -screen
+    -grid, -draw_piece, -draw_board
+    -platform, -draw_score, -draw_timer
+    +draw_pause_on_off(paused, piece, next_piece, board, score, seconds)
+  }
+  class DrawPiece {
+    -screen
+    -grid
+    +draw_piece(piece)
+  }
+  class DrawScore {
+    -screen
+    +draw_score(score)
+  }
+  class DrawTimer {
+    -screen
+    +draw(seconds)
+  }
+  class GameOverScreen {
+    -screen
+    -score, -sound_manager
+    +draw_screen()
+    +handle_input(): string
+  }
+  class Grid {
+    -screen
+    +draw_grid()
+  }
+  class Platform {
+    -screen
+    +draw_platform()
+  }
+}
+
+package "gameMain" {
+  class SpawnPiece {
+    -theme_colors
+    -shape_class, -shape_color
+    +spawn_piece(): Piece
+  }
+  class SpawnNextPiece {
+    +spawn_piece(): Piece
+    +return_piece(): Piece
+  }
+  class ThemeSelection {
+    -screen
+    -sound_manager, -start_button
+    +draw(): list
+  }
+  class Timer {
+    -start_time, -elapsed_time
+    -is_running
+    +start()
+    +stop()
+    +reset()
+    +get_current_time(): float
+    +format_time(seconds): string
+  }
+}
+
+package "sound" {
+  class SoundManager {
+    -music_volume, -sfx_volume
+    -game_tracks, -menu_track
+    +play_menu_music()
+    +play_game_music()
+    +play_drop_sound()
+    +play_clear_sound()
+    +play_game_over_music()
+    +stop_music()
+  }
+}
+
+' Зовнішні бібліотеки
+package pygame {
+}
+package time {
+}
+package os {
+}
+package random {
+}
+package asyncio {
+}
+package platform {
+}
+
+' Взаємозв’язки
+Piece <|-- SquareShape
+Piece <|-- "Piece Variants"
+SpawnPiece <|-- SpawnNextPiece
+
+class Main {
+  +run_game()
+}
+
+Main --> Board : initializes
+Main --> Platform : initializes
+Main --> Timer : initializes
+Main --> ThemeSelection : initializes
+Main --> SoundManager : initializes
+Main --> SpawnPiece : initializes
+Main --> SpawnNextPiece : initializes
+Main --> DrawPauseOnOff : initializes
+Main --> KeyHoldHandler : initializes
+Main --> KeyPressHandler : initializes
+Main --> DrawPiece : initializes
+Main --> DrawBoard : initializes
+Main --> DrawScore : initializes
+Main --> DrawTimer : initializes
+Main --> Grid : initializes
+
+Board --> Piece : uses
+Board --> pygame : uses
+
+KeyHoldHandler --> Board : uses
+KeyHoldHandler --> Piece : manipulates
+KeyHoldHandler --> pygame : uses
+KeyHoldHandler --> asyncio : uses
+KeyHoldHandler --> platform : uses
+
+KeyPressHandler --> Board : uses
+KeyPressHandler --> Piece : manipulates
+KeyPressHandler --> pygame : uses
+KeyPressHandler --> asyncio : uses
+KeyPressHandler --> platform : uses
+
+DrawPauseOnOff --> Grid : uses
+DrawPauseOnOff --> DrawPiece : uses
+DrawPauseOnOff --> DrawBoard : uses
+DrawPauseOnOff --> Platform : uses
+DrawPauseOnOff --> DrawScore : uses
+DrawPauseOnOff --> DrawTimer : uses
+DrawPauseOnOff --> Piece : renders
+DrawPauseOnOff --> Board : renders
+DrawPauseOnOff --> pygame : uses
+
+DrawPiece --> Piece : renders
+DrawPiece --> Grid : uses
+DrawPiece --> pygame : uses
+
+DrawBoard --> Board : renders
+DrawBoard --> pygame : uses
+
+DrawScore --> pygame : uses
+DrawScore --> GameOverScreen : used by
+
+DrawTimer --> Timer : uses
+DrawTimer --> pygame : uses
+
+Platform --> pygame : uses
+
+Grid --> pygame : uses
+
+SpawnPiece --> Piece : creates
+SpawnNextPiece --> Piece : creates
+SpawnPiece --> random : uses
+
+ThemeSelection --> SoundManager : uses
+ThemeSelection --> Button : uses
+ThemeSelection --> pygame : uses
+
+SoundManager --> ThemeSelection : plays theme audio
+SoundManager --> GameOverScreen : used by
+SoundManager --> pygame : uses
+SoundManager --> os : uses
+SoundManager --> random : uses
+
+Timer --> time : uses
+
+@enduml
