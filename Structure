@@ -11,6 +11,7 @@ Tetris
 │   ├── DrawPauseOnOff.py
 │   ├── DrawPiece.py
 │   ├── DrawScore.py
+│   ├── DrawTimer.py
 │   ├── GameOverScreen.py
 │   ├── Grid.py
 │   ├── Platform.py
@@ -18,6 +19,7 @@ Tetris
 ├── gameMain/
 │   ├── SpawnPiece.py
 │   ├── ThemeSelection.py
+│   ├── Timer.py
 ├── sound/
 │   ├── SoundManager.py
 │   ├── menu_track.mp3
