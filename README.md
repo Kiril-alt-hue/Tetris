@@ -42,7 +42,7 @@ To run the game, you will need Python and the `pygame` library.
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://your-github-repo-url/pygame-tetris.git
+    git clone https://kyrylobatrak/pygame-tetris.git
     cd pygame-tetris
     ```
 
